@@ -15,3 +15,10 @@ composer require phpunit/phpunit
 ```
 mkdir tests
 ```
+
+* Create Class
+```
+touch Validator.php
+```
+
+* Write tests, and code to pass the tests. Huzzah!
