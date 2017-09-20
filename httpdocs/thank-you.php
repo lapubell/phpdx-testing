@@ -32,9 +32,32 @@ if (count($_SESSION['error'])) {
 ?><!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Thanks for reaching out!</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
+
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact.php">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-xs-12">
+            <h1>Thanks for reaching out!</h1>
+            <p>Someone has been notified and they will respond soon.</p>
+        </div>
+
+    </div>
+</div>
+
+
 
 </body>
 </html>
