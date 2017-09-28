@@ -32,12 +32,22 @@ class Validator
         return $status;
     }
 
+    /**
+     * check for a value
+     * @param  string $str the string to check
+     * @return bool      if the string length of the variable is shorter than 1, false, otherwise true
+     */
     private function required($str)
     {
         if (strlen($str) < 1) {
             return false;
         }
         return true;
+    }
+
+    private function isEmail($str)
+    {
+        return filter_var($str, FILTER_VALIDATE_EMAIL);
     }
 
     /**
@@ -49,6 +59,11 @@ class Validator
     {
         // if rules aren't set, return early
         if (!is_array($this->rules)) {
+            return false;
+        }
+
+        // if rules aren't calid, return early
+        if ($this->checkRules() == false) {
             return false;
         }
 

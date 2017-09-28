@@ -31,6 +31,31 @@ class ValidatorText extends TestCase
     }
 
     /** @test */
+    public function isEmailIsAValidRule()
+    {
+        $v = new Validator;
+        $rules = [
+            'foo' => 'isEmail'
+        ];
+
+        $result = $v->setRules($rules);
+
+        $this->assertTrue($result);
+    }
+
+    /** @test */
+    public function invalidRulesMakesValidationFalse()
+    {
+        $v = new Validator;
+        $rules = [
+            'foo' => 'nopeThisIsNotAValidRule'
+        ];
+        $v->setRules($rules);
+
+        $this->assertFalse($v->validate([]));
+    }
+
+    /** @test */
     public function requiredMeansItMustBeSetAndNotAnEmptyString()
     {
         $v = new Validator;
@@ -54,5 +79,21 @@ class ValidatorText extends TestCase
             'foo' => 'bar'
         ];
         $this->assertTrue($v->validate($data));
+    }
+
+    /** @test */
+    public function isEmailMeansItHasAnAtSignAndADotAfterThatSomewhere()
+    {
+        $v = new Validator;
+        $rules = [
+            'emailAddress' => 'isEmail'
+        ];
+        $v->setRules($rules);
+
+        // should fail, no @ symbol
+        $data = [
+            'emailAddress' => 'kurtis'
+        ];
+        $this->assertFalse($v->validate($data));
     }
 }
