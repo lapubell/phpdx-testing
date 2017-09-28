@@ -47,7 +47,7 @@ class Validator
 
     private function isEmail($str)
     {
-        return filter_var($str, FILTER_VALIDATE_EMAIL);
+        return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);
     }
 
     /**

@@ -95,5 +95,16 @@ class ValidatorText extends TestCase
             'emailAddress' => 'kurtis'
         ];
         $this->assertFalse($v->validate($data));
+
+        // not quite an email address
+        $data = [
+            'emailAddress' => 'kurtis@'
+        ];
+        $this->assertFalse($v->validate($data));
+
+        $data = [
+            'emailAddress' => 'kurtis@openfunctioncomputers.com'
+        ];
+        $this->assertTrue($v->validate($data));
     }
 }
