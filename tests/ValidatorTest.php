@@ -107,4 +107,21 @@ class ValidatorText extends TestCase
         ];
         $this->assertTrue($v->validate($data));
     }
+
+    /** @test */
+    public function rulesAreSplitByAPipe()
+    {
+        $v = new Validator;
+        $rules = [
+            'fname' => 'required',
+            'emailAddress' => 'isEmail|required'
+        ];
+        $v->setRules($rules);
+
+        $data = [
+            'fname' => 'kurtis',
+            'emailAddress' => 'kurtis@openfunctioncomputers.com'
+        ];
+        $this->assertTrue($v->validate($data));
+    }
 }

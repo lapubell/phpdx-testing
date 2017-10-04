@@ -13,7 +13,12 @@ class Validator
      */
     public function setRules(array $rules)
     {
-        $this->rules = $rules;
+        $this->rules = array_map(function ($ruleName) {
+            if (strpos($ruleName, "|")) {
+                return explode("|", $ruleName);
+            }
+            return $ruleName;
+        }, $rules);
         return $this->checkRules();
     }
 
@@ -21,15 +26,28 @@ class Validator
     {
         $status = true;
         foreach ($this->rules as $prop => $rule) {
-            if (!method_exists($this, $rule)) {
-                $status = false;
-            }
+            $status = $this->checkRule($rule);
 
             if ($rule == "required") {
                 $this->required_fields[] = $prop;
             }
         }
         return $status;
+    }
+
+    private function checkRule($rule)
+    {
+        if (is_string($rule) && !method_exists($this, $rule)) {
+            return false;
+        }
+
+        if (is_array($rule)) {
+            foreach ($rule as $r) {
+                return method_exists($this, $r);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -45,6 +63,11 @@ class Validator
         return true;
     }
 
+    /**
+     * check to see if the str is an email
+     * @param  string  $str the string to check
+     * @return bool
+     */
     private function isEmail($str)
     {
         return (bool) filter_var($str, FILTER_VALIDATE_EMAIL);
@@ -82,7 +105,13 @@ class Validator
             }
 
             // run each rule for each property
-            $status = call_user_func([$this, $this->rules[$prop]], $value);
+            if (is_array($this->rules[$prop])) {
+                foreach ($this->rules[$prop] as $currentRule) {
+                    $status = call_user_func([$this, $currentRule], $value);
+                }
+            } else {
+                $status = call_user_func([$this, $this->rules[$prop]], $value);
+            }
         }
 
         return $status;
