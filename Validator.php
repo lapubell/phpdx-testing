@@ -130,6 +130,9 @@ class Validator
             case 'required':
                 $this->errorMessages[$prop][] = $prop . " is required";
                 break;
+            case 'isEmail':
+                $this->errorMessages[$prop][] = $prop . " is not a valid email address";
+                break;
 
             default:
                 break;
