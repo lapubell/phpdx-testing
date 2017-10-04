@@ -6,6 +6,7 @@ class Validator
 {
     protected $rules;
     protected $required_fields = [];
+    public $errorMessages = [];
 
     /**
      * set the rules needed for successful validation. you can't run the validate method until the rules are set
@@ -93,12 +94,14 @@ class Validator
         // check $data for all required fields
         foreach ($this->required_fields as $key) {
             if (!in_array($key, array_keys($data))) {
+                $this->processErrorMessage("required", $key);
                 return false;
             }
         }
 
-        $status = true;
         foreach ($data as $prop => $value) {
+            $status = true;
+
             // if we don't have any rules for this property, continue as is
             if (!isset($this->rules[$prop])) {
                 continue;
@@ -112,8 +115,24 @@ class Validator
             } else {
                 $status = call_user_func([$this, $this->rules[$prop]], $value);
             }
+
+            if (!$status) {
+                $this->processErrorMessage($this->rules[$prop], $prop);
+            }
         }
 
         return $status;
+    }
+
+    private function processErrorMessage($rule, $prop)
+    {
+        switch ($rule) {
+            case 'required':
+                $this->errorMessages[$prop][] = $prop . " is required";
+                break;
+
+            default:
+                break;
+        }
     }
 }

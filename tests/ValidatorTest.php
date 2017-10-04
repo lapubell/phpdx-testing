@@ -124,4 +124,30 @@ class ValidatorText extends TestCase
         ];
         $this->assertTrue($v->validate($data));
     }
+
+    /** @test */
+    public function requiredErrorShowsTheCorrectMessage()
+    {
+        $v = new Validator;
+        $rules = [
+            'fname' => 'required',
+        ];
+        $data = [];
+        $v->setRules($rules);
+
+        $this->assertFalse($v->validate($data));
+        $this->assertEquals("fname is required", $v->errorMessages['fname'][0]);
+
+        $v = new Validator;
+        $rules = [
+            'fname' => 'required',
+        ];
+        $data = [
+            'fname' => ''
+        ];
+        $v->setRules($rules);
+
+        $this->assertFalse($v->validate($data));
+        $this->assertEquals("fname is required", $v->errorMessages['fname'][0]);
+    }
 }
