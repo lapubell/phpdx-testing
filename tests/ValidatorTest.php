@@ -166,4 +166,22 @@ class ValidatorText extends TestCase
         $this->assertFalse($v->validate($data));
         $this->assertEquals("email is not a valid email address", $v->errorMessages['email'][0]);
     }
+
+    /** @test */
+    public function errorMessageIsFormattedCorrectly()
+    {
+        $v = new Validator;
+        $rules = [
+            'email' => 'isEmail|required',
+            'fname' => 'required',
+        ];
+        $data = [
+            'email' => '',
+            'fname' => '',
+        ];
+        $v->setRules($rules);
+        $v->validate($data);
+
+        $this->assertEquals("<ul><li>email is not a valid email address</li><li>email is required</li><li>fname is required</li></ul>", $v->errorMessage);
+    }
 }

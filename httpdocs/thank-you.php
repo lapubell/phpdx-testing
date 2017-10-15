@@ -7,12 +7,14 @@ $rules = [
     'fname' => 'required',
     'lname' => 'required',
     'phone' => 'required',
-    'email' => 'required',
+    'email' => 'required|isEmail',
     'message' => 'required',
 ];
 $v->setRules($rules);
 if (!$v->validate($_POST)) {
     $_SESSION['error'] = $v->errorMessages;
+    $_SESSION['errorMessage'] = $v->errorMessage;
+    $_SESSION['old'] = $_POST;
     header("Location: /contact.php");
     die();
 }

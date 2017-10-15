@@ -7,6 +7,7 @@ class Validator
     protected $rules;
     protected $required_fields = [];
     public $errorMessages = [];
+    public $errorMessage;
 
     /**
      * set the rules needed for successful validation. you can't run the validate method until the rules are set
@@ -86,17 +87,9 @@ class Validator
             return false;
         }
 
-        // if rules aren't calid, return early
+        // if rules aren't valid, return early
         if ($this->checkRules() == false) {
             return false;
-        }
-
-        // check $data for all required fields
-        foreach ($this->required_fields as $key) {
-            if (!in_array($key, array_keys($data))) {
-                $this->processErrorMessage("required", $key);
-                return false;
-            }
         }
 
         foreach ($data as $prop => $value) {
@@ -111,31 +104,76 @@ class Validator
             if (is_array($this->rules[$prop])) {
                 foreach ($this->rules[$prop] as $currentRule) {
                     $status = call_user_func([$this, $currentRule], $value);
+
+                    if (!$status) {
+                        $this->processErrorMessages($this->rules[$prop], $prop);
+                    }
                 }
             } else {
                 $status = call_user_func([$this, $this->rules[$prop]], $value);
             }
 
             if (!$status) {
-                $this->processErrorMessage($this->rules[$prop], $prop);
+                $this->processErrorMessages($this->rules[$prop], $prop);
+            }
+        }
+
+        // check $data for all required fields
+        foreach ($this->required_fields as $key) {
+            if (!in_array($key, array_keys($data))) {
+                $this->processErrorMessages("required", $key);
+                $status = false;
             }
         }
 
         return $status;
     }
 
-    private function processErrorMessage($rule, $prop)
+    private function processErrorMessages($rule, $prop)
+    {
+        if (is_array($rule)) {
+            foreach ($rule as $r) {
+                $this->addErrorMessage($r, $prop);
+            }
+        } else {
+            $this->addErrorMessage($rule, $prop);
+        }
+
+        $this->errorMessage = "<ul>";
+        foreach ($this->errorMessages as $prop => $errors) {
+            foreach ($errors as $error) {
+                $this->errorMessage .= "<li>" . $error . "</li>";
+            }
+        }
+        $this->errorMessage .= "</ul>";
+    }
+
+    /**
+     * add the correct error message to the array
+     * @param string $rule the current rule we are checking
+     * @param string $prop the current property we are checking
+     */
+    private function addErrorMessage($rule, $prop)
     {
         switch ($rule) {
             case 'required':
-                $this->errorMessages[$prop][] = $prop . " is required";
+                $message = $prop . " is required";
                 break;
             case 'isEmail':
-                $this->errorMessages[$prop][] = $prop . " is not a valid email address";
+                $message = $prop . " is not a valid email address";
+                // $this->errorMessages[$prop][] = $prop
                 break;
 
             default:
                 break;
+        }
+
+        if (!isset($this->errorMessages[$prop])) {
+            $this->errorMessages[$prop] = [];
+        }
+
+        if (!in_array($message, $this->errorMessages[$prop])) {
+            $this->errorMessages[$prop][] = $message;
         }
     }
 }
